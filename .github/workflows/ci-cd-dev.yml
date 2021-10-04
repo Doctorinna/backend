@@ -97,7 +97,7 @@ jobs:
           scp -i key.pem -o StrictHostKeyChecking=no dockerhub.yml ubuntu@${{ env.HOST }}:/home/ubuntu/docker-compose.yml
       - name: Prune docker system
         run: |
-          ssh -i key.pem -o StrictHostKeyChecking=no ubuntu@${{ env.HOST }} sudo docker kill $(sudo docker ps -a -q)
+          ssh -i key.pem -o StrictHostKeyChecking=no ubuntu@${{ env.HOST }} sudo docker kill $(sudo docker ps -a -q) || :
           ssh -i key.pem -o StrictHostKeyChecking=no ubuntu@${{ env.HOST }} sudo docker system prune -a --volumes -f
       - name: Build
         run: |
