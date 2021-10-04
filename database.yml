@@ -1,0 +1,20 @@
+version: "3.9"
+
+services:
+
+  database:
+    container_name: "doctorinna-risks-db"
+    image: postgres:13.4
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - database-risks:/var/lib/postgresql/data
+
+
+volumes:
+  database-risks:
+  static:
