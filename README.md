@@ -1,5 +1,7 @@
 # Doctorinna-Backend
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/25574ca8ef4a46cd95510e17560949ac)](https://app.codacy.com/gh/Doctorinna/backend?utm_source=github.com&utm_medium=referral&utm_content=Doctorinna/backend&utm_campaign=Badge_Grade_Settings)
+
 > This is the part of the Doctorinna project, check out the [overview repository](https://github.com/Doctorinna/overview) first
 
 This repository is place for Doctorinna API. It is built on the Django REST Framework. Current version is project skeleton with `risk_factors` microservice. 
