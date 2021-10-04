@@ -20,7 +20,18 @@ Once the interpreter is ready, install all the dependencies by typing in prompt 
 pip install -r requirements.txt
 ```
 
-## Start server
+The project utilizes Docker Compose tool used for running multi-container Docker applications. It relies on Docker engine that can be installed by following [official instructions](https://docs.docker.com/engine/install/). Once the engine installed proceed with installation of Docker Compose. For the details see [official guidelines](https://docs.docker.com/compose/install/). 
+
+## Database server
+The project uses PostgreSQL database. For convenience database is runned in Docker container. 
+The engine uses default parameters of database name, user and password. Configure them in `.env` file.
+Define and run the Docker container in project's root directory using:
+```
+docker-compose up
+```
+Note that it will serve on port 5432 that is convention for PostgreSQL. 
+
+## Application server
 When the environment is ready, run the server by typing in prompt from the project directory:
 ```
 python manage.py runserver
