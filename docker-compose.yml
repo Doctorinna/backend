@@ -14,6 +14,28 @@ services:
     volumes:
       - database-risks:/var/lib/postgresql/data
 
+  django_gunicorn:
+    container_name: "doctorinna-gunicorn"
+    volumes:
+      - static:/static
+    env_file:
+      - .env
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - database
+
+  nginx:
+    container_name: "doctorinna-nginx"
+    build: ./nginx
+    volumes:
+      - static:/static
+    ports:
+      - "80:80"
+    depends_on:
+      - django_gunicorn
 
 volumes:
   database-risks:

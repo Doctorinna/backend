@@ -83,7 +83,7 @@ DATABASES = {
         'NAME': os.getenv('POSTGRES_DB', 'doctorinna'),
         'USER': os.getenv('POSTGRES_USER', 'postgres'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
-        'HOST': 'localhost',
+        'HOST': 'database',
         'PORT': 5432,
     }
 }
@@ -126,6 +126,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
+STATIC_ROOT = '/static/'
 STATIC_URL = '/static/'
 
 # Default primary key field type
