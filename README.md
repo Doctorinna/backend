@@ -2,6 +2,9 @@
 
 > This is the part of the Doctorinna project, check out the [overview repository](https://github.com/Doctorinna/overview) first
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/924cfbae7cbd4c889eca950aa645a362)](https://www.codacy.com/gh/Doctorinna/backend/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Doctorinna/backend&amp;utm_campaign=Badge_Grade)
+[![codecov.io](https://codecov.io/github/Doctorinna/backend/coverage.svg?branch=dev)](https://app.codecov.io/gh/Doctorinna/backend?branch=dev)
+
 This repository is place for Doctorinna API. It is built on the Django REST Framework. Current version is project skeleton with `risk_factors` microservice. 
 
 Later this microservice will be used to 

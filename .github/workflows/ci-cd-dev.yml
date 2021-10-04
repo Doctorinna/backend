@@ -36,6 +36,10 @@ jobs:
           pip install coverage
           coverage run ./backend/manage.py test
           coverage report
+      - name: Upload Coverage Report to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
       - name: Run tests
         run: |
           python ./backend/manage.py test
