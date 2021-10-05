@@ -15,10 +15,10 @@ Later this microservice will be used to
 -   give recommendation on lifestyle
 -   interact with databases of questions and results
 
-### Deployments
+## Deployments
 For continuous deployment there are used AWS EC2 instances. API is available in two versions:
-1. [Development version](http://18.216.235.168) - contains build of `dev` branch
-2. [Stable version](http://3.128.254.206) - contains build of `master` branch
+1.  [Development version](http://18.216.235.168) - contains build of `dev` branch
+2.  [Stable version](http://3.128.254.206) - contains build of `master` branch
 
 ## Getting started
 Backend is written in Python programming language. In order to launch it locally, one needs to install interpreter from [the official website](https://www.python.org/downloads/). \
@@ -70,7 +70,5 @@ The Docker compose file with [stable version](https://github.com/Doctorinna/over
 
 ### Docker-hub images
 Versions of docker images are available online:
-1. [API + gunicorn](https://registry.hub.docker.com/repository/docker/aldanis/doctorinna-api)
-2. [Nginx server](https://registry.hub.docker.com/repository/docker/aldanis/doctorinna-nginx)
-
-
+1.  [API + gunicorn](https://registry.hub.docker.com/repository/docker/aldanis/doctorinna-api)
+2.  [Nginx server](https://registry.hub.docker.com/repository/docker/aldanis/doctorinna-nginx)
