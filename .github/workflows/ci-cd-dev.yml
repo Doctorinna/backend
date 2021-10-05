@@ -1,0 +1,104 @@
+name: CI/CD dev
+
+on:
+  pull_request:
+    branches:
+      - dev
+  push:
+    branches:
+      - dev
+
+env:
+  IMAGE_API: doctorinna-api
+  IMAGE_NGINX: doctorinna-nginx
+  REGISTRY: aldanis
+  HOST: 18.216.235.168
+
+jobs:
+  continuous-integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Lint with flake8
+        run: |
+          pip install flake8 pytest
+          flake8
+      - name: Coverage report
+        run: |
+          pip install coverage
+          coverage run ./backend/manage.py test
+          coverage report
+      - name: Upload Coverage Report to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Run tests
+        run: |
+          python ./backend/manage.py test
+
+  continuous-deployment:
+    runs-on: ubuntu-latest
+    needs: [ continuous-integration ]
+    if: github.event_name == 'push'
+    steps:
+      - name: Debug
+        run: echo ${{ github.ref }}
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Compose .env file
+        uses: SpicyPizza/create-envfile@v1
+        with:
+          envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          envkey_DEBUG: True
+          envkey_POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          envkey_POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          envkey_POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          envkey_ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
+          envkey_ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          envkey_ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          directory: .
+          file_name: .env
+      - name: Docker login
+        uses: docker/login-action@v1.10.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Build Docker API image
+        run: |
+          docker build . -t ${{ env.REGISTRY }}/${{ env.IMAGE_API }}:${{ github.sha }}
+      - name: Build Docker NGINX image
+        run: |
+          docker build ./nginx/ -t ${{ env.REGISTRY }}/${{ env.IMAGE_NGINX }}:${{ github.sha }}
+      - name: Publish Docker API image
+        run: |
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_API }}:${{ github.sha }}
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_API }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_API }}:latest
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_API }}:latest
+      - name: Publish Docker NGINX image
+        run: |
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NGINX }}:${{ github.sha }}
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NGINX }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NGINX }}:latest
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NGINX }}:latest
+      - name: Prepare SSH
+        run: |
+          echo "${{ secrets.SSH_KEY }}" > key.pem
+          chmod 400 key.pem
+      - name: Transfer files to remote host
+        run: |
+          scp -i key.pem -o StrictHostKeyChecking=no .env ubuntu@${{ env.HOST }}:/home/ubuntu/.env
+          scp -i key.pem -o StrictHostKeyChecking=no dockerhub.yml ubuntu@${{ env.HOST }}:/home/ubuntu/docker-compose.yml
+      - name: Prune docker system
+        run: |
+          ssh -i key.pem -o StrictHostKeyChecking=no ubuntu@${{ env.HOST }} sudo docker kill $(sudo docker ps -a -q) || :
+          ssh -i key.pem -o StrictHostKeyChecking=no ubuntu@${{ env.HOST }} sudo docker system prune -a --volumes -f
+      - name: Build
+        run: |
+          ssh -i key.pem -o StrictHostKeyChecking=no ubuntu@${{ env.HOST }} sudo docker-compose up -d
