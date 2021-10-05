@@ -91,14 +91,14 @@ jobs:
         run: |
           echo "${{ secrets.SSH_KEY }}" > key.pem
           chmod 400 key.pem
+      - name: Prune docker system
+        run: |
+          ssh -i key.pem -o StrictHostKeyChecking=no ubuntu@${{ env.HOST }} sudo docker stop $(sudo docker ps -a -q) || :
+          ssh -i key.pem -o StrictHostKeyChecking=no ubuntu@${{ env.HOST }} sudo docker system prune -a --volumes -f
       - name: Transfer files to remote host
         run: |
           scp -i key.pem -o StrictHostKeyChecking=no .env ubuntu@${{ env.HOST }}:/home/ubuntu/.env
           scp -i key.pem -o StrictHostKeyChecking=no dockerhub.yml ubuntu@${{ env.HOST }}:/home/ubuntu/docker-compose.yml
-      - name: Prune docker system
-        run: |
-          ssh -i key.pem -o StrictHostKeyChecking=no ubuntu@${{ env.HOST }} sudo docker kill $(sudo docker ps -a -q) || :
-          ssh -i key.pem -o StrictHostKeyChecking=no ubuntu@${{ env.HOST }} sudo docker system prune -a --volumes -f
       - name: Build
         run: |
           ssh -i key.pem -o StrictHostKeyChecking=no ubuntu@${{ env.HOST }} sudo docker-compose up -d
