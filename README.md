@@ -3,7 +3,7 @@
 > This is the part of the Doctorinna project, check out the [overview repository](https://github.com/Doctorinna/overview) first
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/924cfbae7cbd4c889eca950aa645a362)](https://www.codacy.com/gh/Doctorinna/backend/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Doctorinna/backend&amp;utm_campaign=Badge_Grade)
-[![codecov.io](https://codecov.io/github/Doctorinna/backend/coverage.svg?branch=dev)](https://app.codecov.io/gh/Doctorinna/backend?branch=dev)
+[![codecov.io](https://codecov.io/github/Doctorinna/backend/coverage.svg?branch=master)](https://app.codecov.io/gh/Doctorinna/backend?branch=master)
 
 This repository is place for Doctorinna API. It is built on the Django REST Framework. Current version is project skeleton with `risk_factors` microservice. 
 
@@ -14,6 +14,11 @@ Later this microservice will be used to
 -   perform analytics of the result
 -   give recommendation on lifestyle
 -   interact with databases of questions and results
+
+### Deployments
+For continuous deployment there are used AWS EC2 instances. API is available in two versions:
+1. [Development version](http://18.216.235.168) - contains build of `dev` branch
+2. [Stable version](http://3.128.254.206) - contains build of `master` branch
 
 ## Getting started
 Backend is written in Python programming language. In order to launch it locally, one needs to install interpreter from [the official website](https://www.python.org/downloads/). \
@@ -62,3 +67,10 @@ docker-compose -f dockerhub.yml up -d
 ```
 However, these images are latest created, so there can be problems with some functionalities. 
 The Docker compose file with [stable version](https://github.com/Doctorinna/overview/blob/master/docker-compose.yml) is available in our overview repository.
+
+### Docker-hub images
+Versions of docker images are available online:
+1. [API + gunicorn](https://registry.hub.docker.com/repository/docker/aldanis/doctorinna-api)
+2. [Nginx server](https://registry.hub.docker.com/repository/docker/aldanis/doctorinna-nginx)
+
+
