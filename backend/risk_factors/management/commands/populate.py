@@ -7,15 +7,15 @@ from backend.settings import BASE_DIR
 
 
 def purge_objects():
-    models = [Disease, Category, Question, Range, Option]
-    [model.objects.all().delete() for model in models]
+    for model in [Disease, Category, Question, Range, Option]:
+        model.objects.all().delete()
 
 
 def populate_diseases(path):
     file_path = os.path.join(BASE_DIR, path)
     diseases_df = pd.read_csv(file_path)
 
-    for index, row in diseases_df.iterrows():
+    for _, row in diseases_df.iterrows():
         Disease.objects.create(illness=row['disease'],
                                description=row['description'])
 
@@ -45,7 +45,7 @@ def populate_questionnaire(questions_path, answers_path):
         options_path = os.path.join(options_dir, f'{question_id_csv}.csv')
         if os.path.exists(options_path):
             options_df = pd.read_csv(options_path)
-            for index, options_row in options_df.iterrows():
+            for _, options_row in options_df.iterrows():
                 answer = options_row['answer']
                 Option.objects.create(question_id=question_obj.id,
                                       answer=answer)
