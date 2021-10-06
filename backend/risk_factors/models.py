@@ -43,7 +43,7 @@ class Option(models.Model):
     question = models.ForeignKey(Question,
                                  on_delete=models.CASCADE,
                                  related_name="options")
-    answer = models.CharField(max_length=1000, unique=True)
+    answer = models.CharField(max_length=1000)
 
     def __str__(self):
         return self.answer
