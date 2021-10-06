@@ -48,6 +48,7 @@ jobs:
       - name: Run Postgre SQL container
         run: |
           docker-compose -f database.yml up -d
+          sleep 5
       - name: Make migrations
         run: |
           python ./backend/manage.py makemigrations
