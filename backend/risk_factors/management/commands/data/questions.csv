@@ -1,0 +1,35 @@
+id,question,category,label,min,max
+1,How old are you?,personal,Age,1,100
+2,What is your gender?,personal,Gender,NaN,NaN
+3,What is your weight (in kg)?,personal,weight,40,200
+4,What is your height (in cm)?,personal,height,100,250
+5,Have you observed a profuse urination?,changes,Polyuria,NaN,NaN
+6,Have you felt extreme thirstiness?,changes,Polydipsia,NaN,NaN
+7,Have you observed a sudden weight loss?,changes,sudden weight loss,NaN,NaN
+8,Have you experienced a visual blurring?,changes,visual blurring,NaN,NaN
+9,Have you experienced ithing in some body parts?,changes,Itching,NaN,NaN
+10,Have you felt weekness?,feelings,weakness,NaN,NaN
+11,Are you constantly hungry?,feelings,Polyphagia,NaN,NaN
+12,Are you easily annoyed?,feelings,Irritability,NaN,NaN
+13,Have you noticed a muscle weakness?,feelings,partial paresis,NaN,NaN
+14,Have you experienced a genital thrush?,introductory,Genital thrush,NaN,NaN
+15,Have you noticed a slower recovery?,introductory,delayed healing,NaN,NaN
+16,Have you noticed a tightness in muscles?,introductory,muscle stiffness,NaN,NaN
+17,Have you observed a sudden hair loss?,introductory,Alopecia,NaN,NaN
+18,Are you suffer from obesity?,introductory,Obesity,NaN,NaN
+19,What is your normal systolic blood pressure?,heart,ap_hi,50,200
+20,What is your normal diastolic blood pressure?,heart,ap_lo,50,200
+21,Do you have a hypertension?,heart,hypertension,NaN,NaN
+22,Do you have any heart disease?,heart,heart_disease,NaN,NaN
+23,What is your cholesterol level (in mg/dL)?,blood,cholesterol,NaN,NaN
+24,What is your glucose level?,blood,gluc,NaN,NaN
+25,Do you smoke?,habits,smoke,NaN,NaN
+26,What is your status as smoker?,habits,smoking_status,NaN,NaN
+27,Do you drink alcohol?,habits,alco,NaN,NaN
+28,Are you have an active lifestyle?,habits,active,NaN,NaN
+29,Are you married?,habits,ever_married,NaN,NaN
+30,What is your worktype?,habits,work_type,NaN,NaN
+31,What is you glucose?,quantitative,avg_glucose_level,0,300
+32,What is your body mass index?,quantitative,bmi,0,50
+33,What is you residence type?,residence,Residence_type,NaN,NaN
+34,What region of Russia are you from?,residence,region,NaN,NaN

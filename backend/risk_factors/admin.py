@@ -1,4 +1,6 @@
 from django.contrib import admin
-from .models import Disease
+from . import models
 
-admin.site.register(Disease)
+models_to_register = [models.Disease, models.Question, models.Range,
+                      models.Option, models.Category]
+admin.site.register(models_to_register)
