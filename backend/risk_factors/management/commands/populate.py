@@ -74,9 +74,14 @@ class Command(BaseCommand):
 
         models_populated = []
         for entity, metadata in entities.items():
+            message = f"  Populating {entity} objects..."
+            self.stdout.write(message, ending=' ')
             metadata['method'](*metadata['path'])
             models_populated += metadata['models']
+            self.stdout.write(self.style.SUCCESS('OK'))
+            self.stdout.flush()
         models_populated = ', '.join(models_populated)
 
         message = f"Successfully populated {models_populated} objects."
         self.stdout.write(self.style.SUCCESS(message))
+        self.stdout.flush()
