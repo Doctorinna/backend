@@ -1,8 +1,38 @@
+import random
 from .test_setup import TestSetUp
-from risk_factors.models import Disease
+from risk_factors.models import Disease, Category, Range, Question, Option
 
 
-class TestModel(TestSetUp):
+class TestDisease(TestSetUp):
     def test_disease_to_string(self):
-        disease = Disease.objects.get(illness='Sample disease')
-        self.assertEqual(str(disease), 'Sample disease')
+        diseases = list(Disease.objects.all())
+        disease = random.choice(diseases)
+        self.assertEqual(str(disease), disease.illness)
+
+
+class TestCategory(TestSetUp):
+    def test_category_to_string(self):
+        categories = list(Category.objects.all())
+        category = random.choice(categories)
+        self.assertEqual(str(category), category.title)
+
+
+class TestRange(TestSetUp):
+    def test_range_to_string(self):
+        ranges = list(Range.objects.all())
+        range_obj = random.choice(ranges)
+        self.assertEqual(str(range_obj), f"[{range_obj.min}..{range_obj.max}]")
+
+
+class TestOption(TestSetUp):
+    def test_option_to_string(self):
+        options = list(Option.objects.all())
+        option = random.choice(options)
+        self.assertEqual(str(option), option.answer)
+
+
+class TestQuestion(TestSetUp):
+    def test_question_to_string(self):
+        questions = list(Question.objects.all())
+        question = random.choice(questions)
+        self.assertEqual(str(question), question.description)
