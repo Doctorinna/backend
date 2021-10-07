@@ -2,9 +2,10 @@ from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
-from .models import Disease, Question, Category
+from .models import Disease, Question, Category, SurveyResponse
 from .serializers import (DiseaseSerializer, QuestionSerializer,
-                          CategorySerializer)
+                          CategorySerializer, SurveyResponseSerializer)
+from .analysis import get_attributes
 
 
 @api_view(['GET'])
@@ -42,4 +43,56 @@ def questions_list(request, category='__all__'):
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = QuestionSerializer(questions, many=True)
+        return Response(serializer.data)
+
+
+@api_view(['GET', 'POST'])
+@permission_classes((permissions.AllowAny,))
+def submit_response(request):
+    if not request.session.session_key:
+        request.session.create()
+    session_id = request.session.session_key
+
+    if request.method == 'GET':
+        responses = SurveyResponse.objects.filter(session_id=session_id)
+        serializer = SurveyResponseSerializer(responses, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = SurveyResponseSerializer(data=request.data, many=True)
+
+        if not serializer.is_valid():
+            status_code = status.HTTP_400_BAD_REQUEST
+            return Response(serializer.errors, status=status_code)
+
+        SurveyResponse.objects.filter(session_id=session_id).delete()
+        for question_response in serializer.validated_data:
+            response_create_kwargs = {
+                'session_id': session_id,
+                **question_response
+            }
+            SurveyResponse.objects.create(**response_create_kwargs)
+        # TODO: invoke analyzers
+        print(get_attributes(session_id))
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['PUT'])
+@permission_classes((permissions.AllowAny,))
+def change_response(request, question):
+    if not request.session.session_key:
+        request.session.create()
+    session_id = request.session.session_key
+
+    if request.method == 'PUT':
+        serializer = SurveyResponseSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            status_code = status.HTTP_400_BAD_REQUEST
+            return Response(serializer.errors, status=status_code)
+
+        response = SurveyResponse.objects.get(session_id=session_id,
+                                              question_id=question)
+        response.answer = serializer.validated_data['answer']
+        response.save()
         return Response(serializer.data)
