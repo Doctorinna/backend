@@ -41,15 +41,13 @@ docker-compose -f database.yml up
 ```
 Note that it will serve on port 5432 that is convention for PostgreSQL. 
 
-Next step is to change the default host for database in [settings.py](backend/backend/settings.py). 
-Intended that for average user it is more convenient to run application via Docker compose that creates aliases inside the network. By default, this alias is the name of database container. 
-Since we do not have network outside the container this alias will fail, so go to settings file, and find declaration `DATABASES` and change value of `HOST` to `'localhost'`. 
-
 When the environment is ready, run the server by typing in prompt from the project directory:
 ```
 python ./backend/manage.py runserver
 ```
 Apparently, you need to run the application locally without containerization.
+
+> NOTE: one needs to add values in [.env file](./.env) before following options. Pay attention that `POSTGRES_HOST` should be preserved.
 
 ### For testing
 If you want to build containers from source code, this option is probably for you. \
