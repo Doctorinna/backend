@@ -52,6 +52,7 @@ class SurveyResponseSerializer(serializers.ModelSerializer):
 
 class ResultSerializer(serializers.ModelSerializer):
     disease = DiseaseSerializer()
+
     class Meta:
         model = Result
         fields = ['disease', 'risk_factor', 'prescription']
