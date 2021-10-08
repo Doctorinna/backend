@@ -3,7 +3,6 @@ import json
 
 from .test_setup import TestSetUp
 from risk_factors.models import Category, Question
-from risk_factors.serializers import SurveyResponseSerializer
 
 
 class TestDiseaseView(TestSetUp):
