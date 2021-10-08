@@ -73,7 +73,7 @@ def submit_response(request):
             }
             SurveyResponse.objects.create(**response_create_kwargs)
         # TODO: invoke analyzers
-        print(get_attributes(session_id))
+        get_attributes(session_id)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
