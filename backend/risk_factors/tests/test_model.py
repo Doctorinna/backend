@@ -1,6 +1,7 @@
 import random
 from .test_setup import TestSetUp
-from risk_factors.models import Disease, Category, Range, Question, Option
+from risk_factors.models import (Disease, Category, Range, Question, Option,
+                                 SurveyResponse)
 
 
 class TestDisease(TestSetUp):
@@ -36,3 +37,11 @@ class TestQuestion(TestSetUp):
         questions = list(Question.objects.all())
         question = random.choice(questions)
         self.assertEqual(str(question), question.description)
+
+
+class TestSurveyResponse(TestSetUp):
+    def test_survey_response_to_string(self):
+        survey_responses = list(SurveyResponse.objects.all())
+        survey_response = random.choice(survey_responses)
+        true_output = f"{survey_response.question} - {survey_response.answer}"
+        self.assertEqual(str(survey_response), true_output)

@@ -2,8 +2,12 @@ from faker import Faker
 import random
 from rest_framework.test import APITestCase
 from django.urls import reverse
+import datetime
+from django.contrib.sessions.models import Session
+from django.utils import timezone
 
-from risk_factors.models import Disease, Category, Range, Question, Option
+from risk_factors.models import (Disease, Category, Range, Question, Option,
+                                 SurveyResponse)
 
 
 class TestSetUp(APITestCase):
@@ -11,6 +15,7 @@ class TestSetUp(APITestCase):
         self.diseases_url = reverse('diseases')
         self.categories_url = reverse('categories')
         self.questions_url = reverse('questions')
+        self.response_url = reverse('response')
 
         self.categories_used = []
 
@@ -19,7 +24,13 @@ class TestSetUp(APITestCase):
 
         num_diseases = random.randint(*num_obj)
         for _ in range(num_diseases):
-            Disease.objects.create(illness=self.faker.word(),
+            diseases_all = list(Disease.objects.all())
+            illnesses = [d.illness for d in diseases_all]
+            illness = self.faker.word()
+            while illness in illnesses:
+                illness = self.faker.word()
+
+            Disease.objects.create(illness=illness,
                                    description=self.faker.sentence())
 
         num_categories = random.randint(*num_obj)
@@ -36,6 +47,8 @@ class TestSetUp(APITestCase):
             Range.objects.create(min=self.faker.random_int(),
                                  max=self.faker.random_int())
 
+        diseases_all = list(Disease.objects.all())
+        connected_diseases_num = random.randint(0, len(diseases_all))
         questions_num = random.randint(*num_obj)
         answers_total = 0
         for _ in range(questions_num):
@@ -55,11 +68,23 @@ class TestSetUp(APITestCase):
                 question_create_args['range_id'] = random_range.id
 
             question_obj = Question.objects.create(**question_create_args)
+            for idx in range(connected_diseases_num):
+                question_obj.diseases.add(diseases_all[idx - 1])
+
             answers_num = random.randint(*num_obj)
             answers_total += answers_num
             for _ in range(answers_num):
                 Option.objects.create(question_id=question_obj.id,
-                                      answer=self.faker.word)
+                                      answer=self.faker.word())
+
+        questions = list(Question.objects.all())
+        date = datetime.datetime.now(tz=timezone.utc) + datetime.timedelta(
+            days=10)
+        session = Session.objects.create(expire_date=date)
+        for question in questions:
+            SurveyResponse.objects.create(session_id=session.session_key,
+                                          question_id=question.pk,
+                                          answer=self.faker.word())
         return super().setUp()
 
     def tearDown(self):

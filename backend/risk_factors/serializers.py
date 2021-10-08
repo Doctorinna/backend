@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from .models import (Disease, Range, Option, Question, Category)
+from .models import (Disease, Range, Option, Question, Category,
+                     SurveyResponse, Result)
 
 
 class DiseaseSerializer(serializers.ModelSerializer):
@@ -41,3 +42,17 @@ class QuestionSerializer(serializers.ModelSerializer):
             message = 'Must include either range or options or both'
             raise serializers.ValidationError(message)
         return data
+
+
+class SurveyResponseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SurveyResponse
+        fields = ['question', 'answer']
+
+
+class ResultSerializer(serializers.ModelSerializer):
+    disease = DiseaseSerializer()
+
+    class Meta:
+        model = Result
+        fields = ['disease', 'risk_factor', 'prescription']
