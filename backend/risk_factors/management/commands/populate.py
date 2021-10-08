@@ -20,11 +20,13 @@ def populate_diseases(path):
                                description=row['description'])
 
 
-def populate_questionnaire(questions_path, answers_path):
+def populate_questionnaire(questions_path, answers_path, mapping_path):
     questions_path = os.path.join(BASE_DIR, questions_path)
     options_dir = os.path.join(BASE_DIR, answers_path)
+    mapping_path = os.path.join(BASE_DIR, mapping_path)
 
     questions_df = pd.read_csv(questions_path)
+    mapping_df = pd.read_csv(mapping_path)
     for _, questions_row in questions_df.iterrows():
         attributes = ['id', 'category', 'min', 'max', 'question', 'label']
         (question_id_csv, category, range_min, range_max, description,
@@ -41,6 +43,13 @@ def populate_questionnaire(questions_path, answers_path):
                                                        max=range_max)
             question_create_args['range_id'] = range_obj.id
         question_obj = Question.objects.create(**question_create_args)
+
+        question_mapping = mapping_df['question_id'] == question_id_csv
+        mapped_diseases = mapping_df.loc[question_mapping]
+        diseases_titles = mapped_diseases['disease_id']
+        for diseases_title in diseases_titles:
+            disease = Disease.objects.get(illness=diseases_title)
+            question_obj.diseases.add(disease)
 
         options_path = os.path.join(options_dir, f'{question_id_csv}.csv')
         if os.path.exists(options_path):
@@ -66,7 +75,8 @@ class Command(BaseCommand):
             },
             'questionnaire': {
                 'path': ['risk_factors/management/commands/data/questions.csv',
-                         'risk_factors/management/commands/data/options/'],
+                         'risk_factors/management/commands/data/options/',
+                         'risk_factors/management/commands/data/mapping.csv'],
                 'method': populate_questionnaire,
                 'models': ['Question', 'Option', 'Range', 'Category']
             },
