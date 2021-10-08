@@ -1,7 +1,9 @@
 import random
+import json
 
 from .test_setup import TestSetUp
-from risk_factors.models import Category
+from risk_factors.models import Category, Question
+from risk_factors.serializers import SurveyResponseSerializer
 
 
 class TestDiseaseView(TestSetUp):
@@ -32,3 +34,31 @@ class TestQuestionnaireView(TestSetUp):
             category_title = self.faker.word()
         response = self.client.get(f'{self.questions_url}{category_title}/')
         self.assertEqual(response.status_code, 404)
+
+    def test_post_response_survey(self):
+        questions = list(Question.objects.all())
+        survey_response_obj = []
+        for question in questions:
+            response_obj = {
+                'question': question.id,
+                'answer': self.faker.word()
+            }
+            survey_response_obj.append(response_obj)
+        response = self.client.post(self.response_url,
+                                    json.dumps(survey_response_obj),
+                                    content_type='application/json')
+        self.client.session.save()
+        self.assertEqual(response.status_code, 201)
+
+        response = self.client.get(self.response_url)
+        self.assertEqual(response.status_code, 200)
+
+        random_question = random.choice(questions)
+        response_changed = {
+            'question': random_question.id,
+            'answer': self.faker.word()
+        }
+        response = self.client.put(f'{self.response_url}{random_question.id}',
+                                   json.dumps(response_changed),
+                                   content_type='application/json')
+        self.assertEqual(response.status_code, 200)
