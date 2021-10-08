@@ -2,8 +2,12 @@ from faker import Faker
 import random
 from rest_framework.test import APITestCase
 from django.urls import reverse
+import datetime
+from django.contrib.sessions.models import Session
+from django.utils import timezone
 
-from risk_factors.models import Disease, Category, Range, Question, Option
+from risk_factors.models import (Disease, Category, Range, Question, Option,
+                                 SurveyResponse)
 
 
 class TestSetUp(APITestCase):
@@ -11,6 +15,7 @@ class TestSetUp(APITestCase):
         self.diseases_url = reverse('diseases')
         self.categories_url = reverse('categories')
         self.questions_url = reverse('questions')
+        self.response_url = reverse('response')
 
         self.categories_used = []
 
@@ -70,7 +75,16 @@ class TestSetUp(APITestCase):
             answers_total += answers_num
             for _ in range(answers_num):
                 Option.objects.create(question_id=question_obj.id,
-                                      answer=self.faker.word)
+                                      answer=self.faker.word())
+
+        questions = list(Question.objects.all())
+        date = datetime.datetime.now(tz=timezone.utc) + datetime.timedelta(
+            days=10)
+        session = Session.objects.create(expire_date=date)
+        for question in questions:
+            SurveyResponse.objects.create(session_id=session.session_key,
+                                          question_id=question.pk,
+                                          answer=self.faker.word())
         return super().setUp()
 
     def tearDown(self):

@@ -6,6 +6,6 @@ urlpatterns = [
     path('categories/', views.categories_list, name='categories'),
     path('questions/', views.questions_list, name='questions'),
     path('questions/<category>/', views.questions_list, name='questions'),
-    path('response/', views.submit_response, name='responses'),
-    path('response/<question>', views.change_response, name='responses'),
+    path('response/', views.submit_response, name='response'),
+    path('response/<question>', views.change_response, name='response'),
 ]
