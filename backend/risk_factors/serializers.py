@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from .models import (Disease, Range, Option, Question, Category,
-                     SurveyResponse)
+                     SurveyResponse, Result)
 
 
 class DiseaseSerializer(serializers.ModelSerializer):
@@ -48,3 +48,11 @@ class SurveyResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = SurveyResponse
         fields = ['question', 'answer']
+
+
+class ResultSerializer(serializers.ModelSerializer):
+    disease = DiseaseSerializer()
+
+    class Meta:
+        model = Result
+        fields = ['disease', 'risk_factor', 'prescription']

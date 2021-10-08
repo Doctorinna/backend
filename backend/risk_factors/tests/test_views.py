@@ -22,7 +22,7 @@ class TestQuestionnaireView(TestSetUp):
 
     def test_get_questions_by_used_category(self):
         category = random.choice(self.categories_used)
-        response = self.client.get(f'{self.questions_url}{category.title}/')
+        response = self.client.get(f'{self.questions_url}{category.title}')
         self.assertEqual(response.status_code, 200)
 
     def test_get_questions_by_unused_category(self):
@@ -31,7 +31,7 @@ class TestQuestionnaireView(TestSetUp):
         category_title = self.faker.word()
         while category_title in categories_titles:
             category_title = self.faker.word()
-        response = self.client.get(f'{self.questions_url}{category_title}/')
+        response = self.client.get(f'{self.questions_url}{category_title}')
         self.assertEqual(response.status_code, 404)
 
     def test_post_response_survey(self):

@@ -2,9 +2,10 @@ from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
-from .models import Disease, Question, Category, SurveyResponse
+from .models import Disease, Question, Category, SurveyResponse, Result
 from .serializers import (DiseaseSerializer, QuestionSerializer,
-                          CategorySerializer, SurveyResponseSerializer)
+                          CategorySerializer, SurveyResponseSerializer,
+                          ResultSerializer)
 from .analysis import get_attributes
 
 
@@ -95,4 +96,27 @@ def change_response(request, question):
                                               question_id=question)
         response.answer = serializer.validated_data['answer']
         response.save()
+        return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes((permissions.AllowAny,))
+def get_result(request, disease='__all__'):
+    if request.method == 'GET':
+        session_id = request.session.session_key
+        diseases_obj = Disease.objects.all()
+        diseases = [dis.illness for dis in diseases_obj]
+
+        results = Result.objects.filter(session_id=session_id)
+        if disease in diseases:
+            results = results.filter(disease__illness=disease)
+            if not results.exists():
+                # TODO: check if it is in queue
+                return Response(status=status.HTTP_202_ACCEPTED)
+        elif disease == '__all__':
+            # TODO: check if it is in queue
+            pass
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = ResultSerializer(results, many=True)
         return Response(serializer.data)

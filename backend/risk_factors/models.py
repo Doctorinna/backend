@@ -58,3 +58,14 @@ class SurveyResponse(models.Model):
 
     def __str__(self):
         return f"{self.question} - {self.answer}"
+
+
+class Result(models.Model):
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
+    disease = models.ForeignKey(Disease, on_delete=models.CASCADE)
+    risk_factor = models.FloatField()
+    prescription = models.TextField()
+
+    def __str__(self):
+        session_key = self.session.session_key
+        return f"{session_key}: {self.disease} - {self.risk_factor}"
