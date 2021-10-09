@@ -1,23 +1,84 @@
 import pandas as pd
+import pickle
+from sklearn.ensemble import RandomForestClassifier
 
-from .models import Question, SurveyResponse
+import os
+from .utils import (get_prescription, get_attributes, diabetes_format,
+                    cardio_format, stroke_format)
+from .models import Disease, Result
+from backend.settings import BASE_DIR
+import warnings
+
+warnings.filterwarnings('ignore')
 
 
-def get_attributes(session_id):
-    columns, values = [], []
-    responses = SurveyResponse.objects.filter(session_id=session_id)
-    attributes = {}
-    for response in responses:
-        question = Question.objects.get(pk=response.question_id)
-        for disease in question.diseases.all():
-            if disease.illness not in attributes:
-                attributes[disease.illness] = []
-            attributes[disease.illness].append(question.label)
-        columns.append(question.label)
-        values.append(response.answer)
-    df = pd.DataFrame([values], columns=columns)
-    df = df.apply(pd.to_numeric, errors='ignore')
-    print(f"\nAttributes for model:\n{attributes}")
-    print(f"Response of user:\n {df}")
-    df.to_csv('response.csv')
-    return df
+def worker(session_id):
+    df, attributes = get_attributes(session_id)
+    diseases = list(Disease.objects.all())
+
+    supported_methods = {
+        'cardiovascular disease': cardio_risk_group,
+        'diabetes': diabetes_risk_group,
+        'stroke': stroke_risk_group
+    }
+
+    for disease in diseases:
+        illness = disease.illness
+        result_kwargs = {
+            'session_id': session_id,
+            'disease': disease
+        }
+
+        if illness not in supported_methods:
+            result_kwargs['risk_factor'] = 0
+            result_kwargs['prescription'] = 'Method is currently not supported'
+        else:
+            method = supported_methods[illness]
+            score = method(df, attributes[illness])
+            result_kwargs['risk_factor'] = score
+            result_kwargs['prescription'] = get_prescription(score)
+
+        Result.objects.update_or_create(
+            session_id=session_id, disease=disease,
+            defaults=result_kwargs
+        )
+
+
+def cardio_risk_group(response, cardio_columns):
+    cardio_response = cardio_format(response[cardio_columns])
+
+    f = RandomForestClassifier()
+    path = os.path.join(BASE_DIR, 'risk_factors/inference/cardio_model')
+    with open(path, 'rb') as f:
+        rf = pickle.load(f)
+
+    pred = rf.predict_proba(cardio_response)
+    pred = pd.DataFrame(data=pred, columns=['0', '1'])['1']
+    return pred.values
+
+
+def diabetes_risk_group(response, diabetes_columns):
+    diabetes_response = diabetes_format(response[diabetes_columns])
+
+    f = RandomForestClassifier()
+    path = os.path.join(BASE_DIR, 'risk_factors/inference/diabetes_model')
+    with open(path, 'rb') as f:
+        rf = pickle.load(f)
+
+    pred = rf.predict_proba(diabetes_response)
+    pred = pd.DataFrame(data=pred, columns=['0', '1'])['1']
+    return pred.values
+
+
+def stroke_risk_group(response, stroke_columns):
+    stroke_response = stroke_format(response[stroke_columns],
+                                    response['weight'], response['height'])
+
+    f = RandomForestClassifier()
+    path = os.path.join(BASE_DIR, 'risk_factors/inference/stroke_model')
+    with open(path, 'rb') as f:
+        rf = pickle.load(f)
+
+    pred = rf.predict_proba(stroke_response)
+    pred = pd.DataFrame(data=pred, columns=['0', '1'])['1']
+    return pred.values
