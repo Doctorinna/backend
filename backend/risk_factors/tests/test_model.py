@@ -1,7 +1,7 @@
 import random
 from .test_setup import TestSetUp
 from risk_factors.models import (Disease, Category, Range, Question, Option,
-                                 SurveyResponse, Result)
+                                 SurveyResponse)
 
 
 class TestDisease(TestSetUp):

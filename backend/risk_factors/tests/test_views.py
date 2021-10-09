@@ -70,4 +70,3 @@ class TestQuestionnaireView(TestSetUp):
 
         response = self.client.get(self.result_url)
         self.assertEqual(response.status_code, 200)
-
