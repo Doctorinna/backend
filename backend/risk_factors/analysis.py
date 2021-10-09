@@ -3,7 +3,8 @@ import pickle
 from sklearn.ensemble import RandomForestClassifier
 
 import os
-from .utils import *
+from .utils import (get_prescription, get_attributes, diabetes_format,
+                    cardio_format, stroke_format)
 from .models import Disease, Result
 from backend.settings import BASE_DIR
 import warnings
