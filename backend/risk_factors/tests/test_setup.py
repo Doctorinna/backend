@@ -16,6 +16,7 @@ class TestSetUp(APITestCase):
         self.categories_url = reverse('categories')
         self.questions_url = reverse('questions')
         self.response_url = reverse('response')
+        self.result_url = reverse('result')
 
         self.categories_used = []
 
@@ -85,6 +86,7 @@ class TestSetUp(APITestCase):
             SurveyResponse.objects.create(session_id=session.session_key,
                                           question_id=question.pk,
                                           answer=self.faker.word())
+        self.result = None
         return super().setUp()
 
     def tearDown(self):

@@ -4,10 +4,11 @@ from sklearn.ensemble import RandomForestClassifier
 
 import os
 from .utils import (get_prescription, get_attributes, diabetes_format,
-                    cardio_format, stroke_format)
-from .models import Disease, Result
+                    cardio_format, stroke_format, get_group)
+from .models import Disease, Result, Score, Question, SurveyResponse
 from backend.settings import BASE_DIR
 import warnings
+from statistics import mean
 
 warnings.filterwarnings('ignore')
 
@@ -22,11 +23,18 @@ def worker(session_id):
         'stroke': stroke_risk_group
     }
 
+    question_region = Question.objects.get(label='region')
+    session_region = (list(SurveyResponse.objects.filter(
+        question_id=question_region.id))[0]).answer
+
+    results = []
     for disease in diseases:
         illness = disease.illness
+
         result_kwargs = {
             'session_id': session_id,
-            'disease': disease
+            'disease': disease,
+            'region': session_region
         }
 
         if illness not in supported_methods:
@@ -35,13 +43,17 @@ def worker(session_id):
         else:
             method = supported_methods[illness]
             score = method(df, attributes[illness])
-            result_kwargs['risk_factor'] = score
+            result_kwargs['risk_factor'] = float(score)
+            result_kwargs['label'] = get_group(score)
             result_kwargs['prescription'] = get_prescription(score)
 
-        Result.objects.update_or_create(
+        result_obj = Result.objects.update_or_create(
             session_id=session_id, disease=disease,
             defaults=result_kwargs
         )
+        results.append(result_obj[0])
+    score = (1 - mean([res.risk_factor for res in results])) * 100
+    Score.objects.create(session_id=session_id, score=score)
 
 
 def cardio_risk_group(response, cardio_columns):

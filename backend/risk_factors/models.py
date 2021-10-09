@@ -63,9 +63,16 @@ class SurveyResponse(models.Model):
 class Result(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
     disease = models.ForeignKey(Disease, on_delete=models.CASCADE)
+    region = models.CharField(max_length=128)
     risk_factor = models.FloatField()
+    label = models.CharField(max_length=128)
     prescription = models.TextField()
 
     def __str__(self):
         session_key = self.session.session_key
         return f"{session_key}: {self.disease} - {self.risk_factor}"
+
+
+class Score(models.Model):
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
+    score = models.FloatField()
