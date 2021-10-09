@@ -23,12 +23,24 @@ def worker(session_id):
 
     for disease in diseases:
         illness = disease.illness
-        method = supported_methods[illness]
-        score = method(df, attributes[illness])
-        result = Result.objects.create(session_id=session_id,
-                                       disease=disease,
-                                       risk_factor=score[0],
-                                       prescription=get_prescription(score))
+        result_kwargs = {
+            'session_id': session_id,
+            'disease': disease
+        }
+
+        if illness not in supported_methods:
+            result_kwargs['risk_factor'] = 0
+            result_kwargs['prescription'] = 'Method is currently not supported'
+        else:
+            method = supported_methods[illness]
+            score = method(df, attributes[illness])
+            result_kwargs['risk_factor'] = score
+            result_kwargs['prescription'] = get_prescription(score)
+
+        Result.objects.update_or_create(
+            session_id=session_id, disease=disease,
+            defaults=result_kwargs
+        )
 
 
 def cardio_risk_group(response, cardio_columns):

@@ -96,6 +96,8 @@ def change_response(request, question):
                                               question_id=question)
         response.answer = serializer.validated_data['answer']
         response.save()
+        # TODO: invoke analyzers
+        worker(session_id)
         return Response(serializer.data)
 
 

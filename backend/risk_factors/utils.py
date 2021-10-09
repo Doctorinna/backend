@@ -5,7 +5,6 @@ from .models import Question, SurveyResponse
 
 def replace(response, attributes):
     for attribute, mapping in attributes.items():
-        print(mapping)
         response[attribute] = response[attribute].replace(*mapping)
     return response
 
