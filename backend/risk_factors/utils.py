@@ -2,6 +2,9 @@ import pandas as pd
 
 from .models import Question, SurveyResponse
 
+THRESHOLDS = [(0, 'No risk group'), (0.2, 'Low risk group'),
+              (0.5, 'Medium risk group'), (0.8, 'High risk group')]
+
 
 def replace(response, attributes):
     for attribute, mapping in attributes.items():
@@ -101,3 +104,9 @@ def get_prescription(score):
     return 'Your results indicate that you are at a high risk group of ' \
            'disease. It is vital to visit a doctor and take the medical ' \
            'check-up. Talk to your doctor before changing your lifestyle.'
+
+
+def get_group(score):
+    for threshold, label in THRESHOLDS[::-1]:
+        if score > threshold:
+            return label

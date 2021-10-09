@@ -9,5 +9,7 @@ urlpatterns = [
     path('response/', views.submit_response, name='response'),
     path('response/<question>', views.change_response, name='response'),
     path('result/', views.get_result, name='result'),
-    path('result/<disease>', views.get_result, name='result'),
+    path('result/specific/<disease>', views.get_result, name='result'),
+    path('result/statistics/<disease>', views.get_statistics, name='regions'),
+    path('result/score/', views.get_score, name='score')
 ]

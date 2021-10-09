@@ -52,10 +52,27 @@ class TestSetUp(APITestCase):
         connected_diseases_num = random.randint(0, len(diseases_all))
         questions_num = random.randint(*num_obj)
         answers_total = 0
-        for _ in range(questions_num):
-            categories = list(Category.objects.all())
-            ranges = list(Range.objects.all())
 
+        categories = list(Category.objects.all())
+        ranges = list(Range.objects.all())
+
+        random_category = random.choice(categories)
+        self.categories_used.append(random_category)
+        question_create_args = {
+            'description': self.faker.text(),
+            'label': 'region',
+            'category_id': random_category.id,
+        }
+        threshold_range_creation = 0.5
+        if random.random() > threshold_range_creation:
+            random_range = random.choice(ranges)
+            question_create_args['range_id'] = random_range.id
+
+        question_obj = Question.objects.create(**question_create_args)
+        for idx in range(connected_diseases_num):
+            question_obj.diseases.add(diseases_all[idx - 1])
+
+        for _ in range(questions_num):
             random_category = random.choice(categories)
             self.categories_used.append(random_category)
             question_create_args = {
