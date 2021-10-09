@@ -6,7 +6,7 @@ from .models import Disease, Question, Category, SurveyResponse, Result
 from .serializers import (DiseaseSerializer, QuestionSerializer,
                           CategorySerializer, SurveyResponseSerializer,
                           ResultSerializer)
-from .analysis import get_attributes
+from .analysis import worker
 
 
 @api_view(['GET'])
@@ -74,7 +74,7 @@ def submit_response(request):
             }
             SurveyResponse.objects.create(**response_create_kwargs)
         # TODO: invoke analyzers
-        get_attributes(session_id)
+        worker(session_id)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -96,6 +96,8 @@ def change_response(request, question):
                                               question_id=question)
         response.answer = serializer.validated_data['answer']
         response.save()
+        # TODO: invoke analyzers
+        worker(session_id)
         return Response(serializer.data)
 
 
