@@ -43,6 +43,7 @@ class TestQuestionnaireView(TestSetUp):
                 'answer': self.faker.word()
             }
             survey_response_obj.append(response_obj)
+
         response = self.client.post(self.response_url,
                                     json.dumps(survey_response_obj),
                                     content_type='application/json')
