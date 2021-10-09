@@ -2,7 +2,7 @@ import random
 import json
 
 from .test_setup import TestSetUp
-from risk_factors.models import Category, Question
+from risk_factors.models import Category, Question, Result
 
 
 class TestDiseaseView(TestSetUp):
@@ -49,6 +49,12 @@ class TestQuestionnaireView(TestSetUp):
         self.client.session.save()
         self.assertEqual(response.status_code, 201)
 
+        results = list(Result.objects.all())
+        result = random.choice(results)
+        session = result.session
+        true_output = f"{session}: {result.disease} - {result.risk_factor}"
+        self.assertEqual(str(result), true_output)
+
         response = self.client.get(self.response_url)
         self.assertEqual(response.status_code, 200)
 
@@ -61,3 +67,7 @@ class TestQuestionnaireView(TestSetUp):
                                    json.dumps(response_changed),
                                    content_type='application/json')
         self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(self.result_url)
+        self.assertEqual(response.status_code, 200)
+
