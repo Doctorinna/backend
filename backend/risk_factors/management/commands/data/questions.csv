@@ -7,8 +7,8 @@ id,question,category,label,min,max
 6,Have you felt extreme thirstiness?,changes,Polydipsia,NaN,NaN
 7,Have you observed a sudden weight loss?,changes,sudden weight loss,NaN,NaN
 8,Have you experienced a visual blurring?,changes,visual blurring,NaN,NaN
-9,Have you experienced ithing in some body parts?,changes,Itching,NaN,NaN
-10,Have you felt weekness?,feelings,weakness,NaN,NaN
+9,Have you experienced itching in some body parts?,changes,Itching,NaN,NaN
+10,Have you felt weakness?,feelings,weakness,NaN,NaN
 11,Are you constantly hungry?,feelings,Polyphagia,NaN,NaN
 12,Are you easily annoyed?,feelings,Irritability,NaN,NaN
 13,Have you noticed a muscle weakness?,feelings,partial paresis,NaN,NaN

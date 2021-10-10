@@ -1,7 +1,9 @@
 #!/bin/bash
 
 sleep 10
+celery -A backend worker -l INFO --detach
 
+sleep 5
 python manage.py makemigrations
 python manage.py migrate
 
