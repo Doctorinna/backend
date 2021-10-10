@@ -2,7 +2,7 @@ import random
 import json
 
 from .test_setup import TestSetUp
-from risk_factors.models import Category, Question, Result
+from risk_factors.models import Category, Question
 from django.test.utils import override_settings
 
 
@@ -35,8 +35,7 @@ class TestQuestionnaireView(TestSetUp):
         response = self.client.get(f'{self.questions_url}{category_title}')
         self.assertEqual(response.status_code, 404)
 
-    @override_settings(CELERY_ALWAYS_EAGER=True,
-                       TEST_RUNNER='djcelery.contrib.test_runner.CeleryTestSuiteRunner')
+    @override_settings(CELERY_ALWAYS_EAGER=True)
     def test_post_response_survey(self):
         questions = list(Question.objects.all())
         survey_response_obj = []
@@ -68,7 +67,8 @@ class TestQuestionnaireView(TestSetUp):
         #     'question': random_question.id,
         #     'answer': self.faker.word()
         # }
-        # response = self.client.put(f'{self.response_url}{random_question.id}',
+        # response = self.client.put(
+        # f'{self.response_url}{random_question.id}',
         #                            json.dumps(response_changed),
         #                            content_type='application/json')
         # self.assertEqual(response.status_code, 200)

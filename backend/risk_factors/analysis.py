@@ -3,11 +3,10 @@ import pandas as pd
 import pickle
 import os
 import warnings
-
-warnings.filterwarnings('ignore')
-
 from .utils import (diabetes_format, cardio_format, stroke_format)
 from backend.settings import BASE_DIR
+
+warnings.filterwarnings('ignore')
 
 
 def cardio_risk_group(response, cardio_columns):
