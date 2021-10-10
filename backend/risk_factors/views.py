@@ -119,8 +119,8 @@ def get_result(request, disease='__all__'):
                 # TODO: check if it is in queue
                 return Response(status=status.HTTP_202_ACCEPTED)
         elif disease == '__all__':
-            # TODO: check if it is in queue
-            pass
+            if not results.exists():
+                return Response(status=status.HTTP_404_NOT_FOUND)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = ResultSerializer(results, many=True)
@@ -137,7 +137,7 @@ def get_score(request):
         if score_obj.exists():
             score = (score_obj[0]).score
 
-            scores_worse = len(Score.objects.filter(score__lte=score))
+            scores_worse = len(Score.objects.filter(score__lt=score))
             scores_all = len(Score.objects.all())
             scores_worse_percents = scores_worse / scores_all * 100
 
@@ -165,6 +165,7 @@ def get_statistics(request, disease):
                                            disease__illness=disease)
 
         if disease_obj.exists() and result_obj.exists():
+            # TODO: if not specified merge to other
             results_for_disease = Result.objects.filter(
                 disease__illness=disease)
             results_grouped = results_for_disease.values('region')
@@ -173,17 +174,21 @@ def get_statistics(request, disease):
             avg_factors_sorted = regions_avg_factor.order_by('-avg_factor')
             avg_factors_json = list(avg_factors_sorted)
 
-            user_region = (result_obj[0]).region
-            results_in_region = Result.objects.filter(disease__illness=disease,
-                                                      region=user_region)
-            results_grouped = results_in_region.values('label')
-            labels_number = results_grouped.annotate(count=Count('session'))
-            labels_number_json = list(labels_number)
-
             message = {
                 'country': avg_factors_json,
-                'your_region': labels_number_json
             }
+
+            user_region = (result_obj[0]).region
+            if user_region != 'It\'s private':
+                results_in_region = Result.objects.filter(
+                    disease__illness=disease,
+                    region=user_region)
+                results_grouped = results_in_region.values('label')
+                labels_number = results_grouped.annotate(
+                    count=Count('session'))
+                labels_number_json = list(labels_number)
+                message['your_region'] = labels_number_json
+
             return HttpResponse(json.dumps(message),
                                 content_type='application/json')
         return Response(status=status.HTTP_404_NOT_FOUND)
