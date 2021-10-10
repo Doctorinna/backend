@@ -13,6 +13,19 @@ services:
       - "5432:5432"
     volumes:
       - database-risks:/var/lib/postgresql/data
+    networks:
+      - database_network
+
+  rabbitmq:
+    container_name: "doctorinna-risks-broker"
+    image: rabbitmq:latest
+    ports:
+      - "5672:5672"
+    depends_on:
+      - database
+    networks:
+      - database_network
+      - nginx_network
 
   django_gunicorn:
     container_name: "doctorinna-gunicorn"
@@ -24,8 +37,13 @@ services:
       context: .
     ports:
       - "8000:8000"
+    links:
+      - rabbitmq
     depends_on:
-      - database
+      - rabbitmq
+    networks:
+      - database_network
+      - nginx_network
 
   nginx:
     container_name: "doctorinna-nginx"
@@ -36,6 +54,16 @@ services:
       - "80:80"
     depends_on:
       - django_gunicorn
+    networks:
+      - nginx_network
+    links:
+      - rabbitmq
+
+networks:
+  nginx_network:
+    driver: bridge
+  database_network:
+    driver: bridge
 
 volumes:
   database-risks:
