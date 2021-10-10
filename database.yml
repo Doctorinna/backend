@@ -14,6 +14,11 @@ services:
     volumes:
       - database-risks:/var/lib/postgresql/data
 
+  rabitmq:
+    container_name: "doctorinna-risks-broker"
+    image: rabbitmq:latest
+    ports:
+      - "5672:5672"
 
 volumes:
   database-risks:
