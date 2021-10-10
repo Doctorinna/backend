@@ -18,6 +18,7 @@ def worker(session_id):
 
     question_region = Question.objects.get(label='region')
     session_region = (list(SurveyResponse.objects.filter(
+        session_id=session_id,
         question_id=question_region.id))[0]).answer
 
     results = []
