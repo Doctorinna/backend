@@ -16,7 +16,7 @@ services:
     networks:
       - database_network
 
-  rabitmq:
+  rabbitmq:
     container_name: "doctorinna-risks-broker"
     image: rabbitmq:latest
     ports:
