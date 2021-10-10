@@ -10,7 +10,7 @@ from .models import Disease, Question, Category, SurveyResponse, Result, Score
 from .serializers import (DiseaseSerializer, QuestionSerializer,
                           CategorySerializer, SurveyResponseSerializer,
                           ResultSerializer)
-from .analysis import worker
+from .tasks import worker
 from .utils import THRESHOLDS
 
 
@@ -78,8 +78,7 @@ def submit_response(request):
                 **question_response
             }
             SurveyResponse.objects.create(**response_create_kwargs)
-        # TODO: invoke analyzers
-        worker(session_id)
+        worker.delay(session_id)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -101,8 +100,7 @@ def change_response(request, question):
                                               question_id=question)
         response.answer = serializer.validated_data['answer']
         response.save()
-        # TODO: invoke analyzers
-        worker(session_id)
+        worker.delay(session_id)
         return Response(serializer.data)
 
 
