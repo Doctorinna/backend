@@ -100,8 +100,9 @@ The documentation for Doctorinna API is available [online](http://3.128.254.206)
 
 ## 🔓 Deployments <a name="deploy"></a>
 For continuous deployment there are used AWS EC2 instances. API is available in two versions:
-1.  [Development version](http://18.216.235.168) - contains build of `dev` branch
-2.  [Stable version](http://3.128.254.206) - contains build of `master` branch
+> Currently on maintenance
+1.  [Development version]() - contains build of `dev` branch
+2.  [Stable version]() - contains build of `master` branch
 
 ### Docker-hub images
 Versions of docker images are available online:
