@@ -1,0 +1,8 @@
+---
+
+DB_CONTAINER: doctorinna-db
+DB_IMAGE: "postgres:13.4"
+DB_VOLUME: doctorinna-db-data
+
+DB_PORT: 5432
+

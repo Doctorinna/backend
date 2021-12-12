@@ -1,0 +1,8 @@
+---
+
+- name: Run broker container (if not running)
+  docker_container:
+    name: "{{ BROKER_CONTAINER }}"
+    image: "{{ BROKER_IMAGE }}"
+    ports:
+      - "{{ BROKER_PORT }}:5672"

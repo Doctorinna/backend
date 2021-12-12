@@ -1,0 +1,14 @@
+---
+
+- name: Run database container (if not running)
+  docker_container:
+    name: "{{ DB_CONTAINER }}"
+    image: "{{ DB_IMAGE }}"
+    env:
+      POSTGRES_DB: "{{ DB_NAME }}"
+      POSTGRES_USER: "{{ DB_USER }}"
+      POSTGRES_PASSWORD: "{{ DB_PASSWORD }}"
+    ports:
+      - "{{ DB_PORT }}:5432"
+    volumes:
+      - "{{ DB_VOLUME }}:/var/lib/postgresql/data"

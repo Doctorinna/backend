@@ -1,0 +1,8 @@
+---
+
+BROKER_CONTAINER: doctorinna-broker
+BROKER_IMAGE: "rabbitmq:latest"
+
+BROKER_PORT: 5672
+
+

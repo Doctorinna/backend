@@ -126,3 +126,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# IDE files
+.idea/
+
+# Ansible files
+ansible/group_vars/
+ansible/vars.yml

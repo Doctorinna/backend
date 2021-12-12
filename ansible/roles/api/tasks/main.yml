@@ -1,0 +1,22 @@
+---
+
+- name: Pull API image and run container
+  docker_container:
+    name: "{{ API_CONTAINER }}"
+    image: "{{ REGISTRY }}/{{ API_IMAGE }}"
+    pull: yes
+    env:
+      SECRET_KEY: "{{ SECRET_KEY }}"
+      DEBUG: "{{ DEBUG }}"
+      POSTGRES_DB: "{{ DB_NAME }}"
+      POSTGRES_USER: "{{ DB_USER }}"
+      POSTGRES_PASSWORD: "{{ DB_PASSWORD }}"
+      POSTGRES_HOST: "{{ DB_HOST }}"
+      BROKER_HOST: "{{ BROKER_HOST }}"
+      ADMIN_USERNAME: "{{ ADMIN_USERNAME }}"
+      ADMIN_EMAIL: "{{ ADMIN_EMAIL }}"
+      ADMIN_PASSWORD: "{{ ADMIN_PASSWORD }}"
+    ports:
+      - "{{ API_PORT }}:8000"
+    volumes:
+      - static:/static

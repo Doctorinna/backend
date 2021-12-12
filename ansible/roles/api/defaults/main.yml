@@ -1,0 +1,6 @@
+---
+
+API_CONTAINER: doctorinna-api
+API_IMAGE: doctorinna-api
+
+API_PORT: 8000

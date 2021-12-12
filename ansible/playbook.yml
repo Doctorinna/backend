@@ -1,0 +1,42 @@
+---
+
+- name: Gather facts
+  hosts: all
+  become: yes
+  gather_facts: yes
+
+- name: Docker
+  hosts: all
+  become: yes
+  gather_facts: no
+  roles:
+    - docker
+
+- name: Database container
+  hosts: db_server
+  become: yes
+  gather_facts: no
+  roles:
+    - db
+
+- name: Broker container
+  hosts: broker_server
+  become: yes
+  gather_facts: no
+  roles:
+    - broker
+
+- name: API container
+  hosts: api_servers
+  become: yes
+  gather_facts: no
+  roles:
+    - api
+
+- name: NGINX container
+  hosts: nginx_server
+  become: yes
+  gather_facts: no
+  roles:
+    - nginx
+
