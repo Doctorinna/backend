@@ -27,9 +27,9 @@ jobs:
         with:
           envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
           envkey_DEBUG: True
-          envkey_POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-          envkey_POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          envkey_POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          envkey_POSTGRES_DB: ${{ secrets.DB_NAME }}
+          envkey_POSTGRES_USER: ${{ secrets.DB_USER }}
+          envkey_POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
           envkey_POSTGRES_HOST: database
           envkey_BROKER_HOST: rabbitmq
           envkey_ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
@@ -83,8 +83,8 @@ jobs:
           envkey_POSTGRES_DB: ${{ secrets.DB_NAME }}
           envkey_POSTGRES_USER: ${{ secrets.DB_USER }}
           envkey_POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          envkey_POSTGRES_HOST: ${{ DB_HOST }}
-          envkey_BROKER_HOST: ${{ BROKER_HOST }}
+          envkey_POSTGRES_HOST: ${{ secrets.DB_HOST }}
+          envkey_BROKER_HOST: ${{ secrets.BROKER_HOST }}
           envkey_ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
           envkey_ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
           envkey_ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
