@@ -25,7 +25,7 @@
 - [License](#license)
 
 ## 📝 About the project <a name="about"></a>
-This repository is place for Doctorinna API. Our long-term goal is to create an [open-source API](http://3.128.254.206) that provides analysis of a variety of medical data. We want to solve a whole range of problems related to the digitalization of medicine. In particular, the shortage of doctors in third world countries, and the high cost of solutions for the analysis of biomedical data. For example, based on this API, applications for self-analysis of health in third world countries can be developed. 
+This repository is place for Doctorinna API. Our long-term goal is to create an [open-source API](https://18.216.251.167) that provides analysis of a variety of medical data. We want to solve a whole range of problems related to the digitalization of medicine. In particular, the shortage of doctors in third world countries, and the high cost of solutions for the analysis of biomedical data. For example, based on this API, applications for self-analysis of health in third world countries can be developed. 
 
 We started our work with the development of a microservice to identify risk groups. The analysis is based on questions that do not require medical measurements. More details are provided in the [readme file](backend/risk_factors/README.md) for `risk_factors` microservice.
 
