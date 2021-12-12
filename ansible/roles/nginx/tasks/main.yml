@@ -3,7 +3,7 @@
 - name: Pull NGINX image and run container
   docker_container:
     name: "{{ NGINX_CONTAINER }}"
-    image: "{{ NGINX_REGISTRY }}/{{ NGINX_IMAGE }}"
+    image: "{{ REGISTRY }}/{{ NGINX_IMAGE }}"
     pull: yes
     ports:
       - "80:80"

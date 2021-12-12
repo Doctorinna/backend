@@ -1,7 +1,5 @@
 ---
 
-NGINX_REGISTRY: maximpr
-
 NGINX_CONTAINER: doctorinna-nginx
 NGINX_IMAGE: doctorinna-nginx
 

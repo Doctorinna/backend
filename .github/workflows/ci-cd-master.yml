@@ -100,6 +100,9 @@ jobs:
           docker build . -t ${{ env.REGISTRY }}/${{ env.IMAGE_API }}:${{ github.sha }}
       - name: Build Docker NGINX image
         run: |
+          mkdir ./nginx/ssl/
+          echo "${{ secrets.SSL_CRT }}" > ./nginx/ssl/doctorinna-api.com.crt
+          echo "${{ secrets.SSL_KEY }}" > ./nginx/ssl/doctorinna-api.com.key
           docker build ./nginx/ -t ${{ env.REGISTRY }}/${{ env.IMAGE_NGINX }}:${{ github.sha }}
       - name: Publish Docker API image
         run: |
