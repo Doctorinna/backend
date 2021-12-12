@@ -12,7 +12,6 @@ env:
   IMAGE_API: doctorinna-api
   IMAGE_NGINX: doctorinna-nginx
   REGISTRY: aldanis
-  HOST: 3.128.254.206
 
 jobs:
   continuous-integration:
@@ -81,11 +80,11 @@ jobs:
         with:
           envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
           envkey_DEBUG: True
-          envkey_POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-          envkey_POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          envkey_POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          envkey_POSTGRES_HOST: database
-          envkey_BROKER_HOST: rabbitmq
+          envkey_POSTGRES_DB: ${{ secrets.DB_NAME }}
+          envkey_POSTGRES_USER: ${{ secrets.DB_USER }}
+          envkey_POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          envkey_POSTGRES_HOST: ${{ DB_HOST }}
+          envkey_BROKER_HOST: ${{ BROKER_HOST }}
           envkey_ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
           envkey_ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
           envkey_ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
@@ -94,8 +93,8 @@ jobs:
       - name: Docker login
         uses: docker/login-action@v1.10.0
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
       - name: Build Docker API image
         run: |
           docker build . -t ${{ env.REGISTRY }}/${{ env.IMAGE_API }}:${{ github.sha }}
@@ -105,25 +104,56 @@ jobs:
       - name: Publish Docker API image
         run: |
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_API }}:${{ github.sha }}
-          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_API }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_API }}:stable
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_API }}:stable
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_API }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_API }}:latest
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_API }}:latest
       - name: Publish Docker NGINX image
         run: |
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NGINX }}:${{ github.sha }}
-          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NGINX }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NGINX }}:stable
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NGINX }}:stable
-      - name: Prepare SSH
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NGINX }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NGINX }}:latest
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NGINX }}:latest
+      - name: Compose YML file with container specific variables
         run: |
-          echo "${{ secrets.SSH_KEY }}" > key.pem
-          chmod 400 key.pem
-      - name: Prune docker system
+          cd ansible/
+          echo "REGISTRY_USER:     ${{ secrets.REGISTRY_USER }}" >> vars.yml
+          echo "REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}" >> vars.yml
+          echo "REGISTRY:          ${{ secrets.REGISTRY }}" >> vars.yml
+          echo "DB_NAME:           ${{ secrets.DB_NAME }}" >> vars.yml
+          echo "DB_USER:           ${{ secrets.DB_USER }}" >> vars.yml
+          echo "DB_PASSWORD:       ${{ secrets.DB_PASSWORD }}" >> vars.yml
+          echo "SECRET_KEY:        ${{ secrets.SECRET_KEY }}" >> vars.yml
+          echo "DEBUG:             ${{ secrets.DEBUG }} | quote" >> vars.yml
+          echo "DB_HOST:           ${{ secrets.DB_HOST }}" >> vars.yml
+          echo "BROKER_HOST:       ${{ secrets.BROKER_HOST }}" >> vars.yml
+          echo "ADMIN_USERNAME:    ${{ secrets.ADMIN_USERNAME }}" >> vars.yml
+          echo "ADMIN_EMAIL:       ${{ secrets.ADMIN_EMAIL }}" >> vars.yml
+          echo "ADMIN_PASSWORD:    ${{ secrets.ADMIN_PASSWORD }}" >> vars.yml
+      - name: Compose directory with host specific variables
         run: |
-          ssh -i key.pem -o StrictHostKeyChecking=no ubuntu@${{ env.HOST }} sudo docker-compose down || :
-          ssh -i key.pem -o StrictHostKeyChecking=no ubuntu@${{ env.HOST }} sudo docker system prune -a --volumes -f
-      - name: Transfer files to remote host
-        run: |
-          scp -i key.pem -o StrictHostKeyChecking=no .env ubuntu@${{ env.HOST }}:/home/ubuntu/.env
-          scp -i key.pem -o StrictHostKeyChecking=no dockerhub.yml ubuntu@${{ env.HOST }}:/home/ubuntu/docker-compose.yml
-      - name: Build
-        run: |
-          ssh -i key.pem -o StrictHostKeyChecking=no ubuntu@${{ env.HOST }} sudo docker-compose up -d
+          cd ansible/
+          mkdir group_vars
+          echo "ansible_user:      ${{ secrets.PUBLIC_SERVER_USER }}" >> group_vars/local.yml
+          echo "ansible_sudo_pass: ${{ secrets.PUBLIC_SERVER_SUDO_PASS }}" >> group_vars/local.yml
+          echo "ansible_user:             ${{ secrets.PRIVATE_SERVERS_USER }}" >> group_vars/remote.yml
+          echo "ansible_private_key_file: ${{ secrets.PRIVATE_SERVERS_SSH_KEY_FILE }}" >> group_vars/remote.yml
+      - name: Transfer ansible directory
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.PUBLIC_SERVER_IP }}
+          username: ${{ secrets.PUBLIC_SERVER_USER }}
+          key: ${{ secrets.PUBLIC_SERVER_SSH_KEY }}
+          passphrase: ${{ secrets.PUBLIC_SERVER_SSH_PASSPHRASE }}
+          port: ${{ secrets.PUBLIC_SERVER_SSH_PORT }}
+          source: "ansible/"
+          target: "/home/${{ secrets.PUBLIC_SERVER_USER }}/"
+      - name: Run ansible playbook
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PUBLIC_SERVER_IP }}
+          username: ${{ secrets.PUBLIC_SERVER_USER }}
+          key: ${{ secrets.PUBLIC_SERVER_SSH_KEY }}
+          passphrase: ${{ secrets.PUBLIC_SERVER_SSH_PASSPHRASE }}
+          port: ${{ secrets.PUBLIC_SERVER_SSH_PORT }}
+          script: |
+            cd ansible/
+            source venv/bin/activate
+            ansible-playbook playbook.yml --extra-vars "@vars.yml"
