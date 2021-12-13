@@ -11,4 +11,4 @@ DJANGO_SUPERUSER_PASSWORD="$ADMIN_PASSWORD" python manage.py createsuperuser --u
 
 python manage.py collectstatic --noinput
 
-gunicorn backend.wsgi:application --bind :8000
+gunicorn backend.wsgi:application --workers=2 --bind :8000
